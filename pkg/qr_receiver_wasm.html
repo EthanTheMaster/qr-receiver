@@ -83,7 +83,7 @@
                             progressElement.innerHTML = (receiver.get_progress_percentage() * 100.0).toFixed(2) + "%";
                             pendingElement.innerHTML = "Pending Blocks: " + receiver.get_num_pending_blocks();
 
-                            if (receiver.has_completed_download()) {
+                            if (receiver.has_completed_download() && !finished_download) {
                                 var data = receiver.get_finished_data();
                                 console.log(data);
                                 alert("Finished Decoding!");
