@@ -1,0 +1,14 @@
+{
+  "name": "wasm-qr-receiver",
+  "collaborators": [
+    "Ethan Lam <elmemphis2000@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "wasm_qr_receiver_bg.wasm",
+    "wasm_qr_receiver.js",
+    "wasm_qr_receiver.d.ts"
+  ],
+  "browser": "wasm_qr_receiver.js",
+  "types": "wasm_qr_receiver.d.ts"
+}

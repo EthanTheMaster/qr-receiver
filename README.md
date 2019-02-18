@@ -1,52 +1,5 @@
-# 🦀🕸️ `wasm-pack-template`
+# What is this?
+This is the receiver program for the [`qr-transmitter` program](https://github.com/EthanTheMaster/qr-transmitter). This project is written in `Javascript` and `Rust` as a test for WASM/WebAssembly. The pure JS version can be found in `pkg/qr_receiver_purejs.html` and the WASM version in `pkg/qr_receiver_wasm.html`. The receiver was written as a web app due to the cross-platform capabilites of the web. [Thanks to cozmo for his JS QR decoder implementation!](https://github.com/cozmo/jsQR).
 
-A template for kick starting a Rust and WebAssembly project using
-[`wasm-pack`](https://github.com/rustwasm/wasm-pack).
-
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting package to NPM.
-
-* Want to use the published NPM package in a Website? [Check out
-  `create-wasm-app`.](https://github.com/rustwasm/create-wasm-app)
-* Want to make a monorepo-style Website without publishing to NPM? Check out
-  [`rust-webpack-template`](https://github.com/rustwasm/rust-webpack-template)
-  and/or
-  [`rust-parcel-template`](https://github.com/rustwasm/rust-parcel-template).
-
-## 🔋 Batteries Included
-
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
-  for small code size.
-
-## 🚴 Usage
-
-### 🐑 Use `cargo generate` to Clone this Template
-
-[Learn more about `cargo generate` here.](https://github.com/ashleygwilliams/cargo-generate)
-
-```
-cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
-cd my-project
-```
-
-### 🛠️ Build with `wasm-pack build`
-
-```
-wasm-pack build
-```
-
-### 🔬 Test in Headless Browsers with `wasm-pack test`
-
-```
-wasm-pack test --headless --firefox
-```
-
-### 🎁 Publish to NPM with `wasm-pack publish`
-
-```
-wasm-pack publish
-```
+# How to compile WASM project
+You will need to [install `wasm-pack`](https://github.com/rustwasm/wasm-pack) to compile this program. Once it has been installed, enter the project directory and run `wasm-pack build --target no-modules`. Make sure to either extract out the `.js` and `.wasm` files into the directory of the WASM version of the receiver or simply keep the receiver`.html` file in the `pkg/` directory. 

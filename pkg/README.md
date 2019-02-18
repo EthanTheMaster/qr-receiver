@@ -1,0 +1,2 @@
+# What is this?
+This is the receiver program for the [`qr-transmitter` program](https://github.com/EthanTheMaster/qr-transmitter). This project is written in `Javascript` and `Rust` as a test for WASM/WebAssembly. The pure JS version can be found in `pkg/qr_receiver_purejs.html` and the WASM version in `pkg/qr_receiver_wasm.html`. 

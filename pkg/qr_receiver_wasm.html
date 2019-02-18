@@ -1,0 +1,108 @@
+<html>
+    <body>
+        <h3 id="progress">0%</h3>
+        <h3 id="pending">Pending Blocks: 0</h3>        
+        <canvas id="canvas"></canvas>
+
+        <script>
+            // The `--no-modules`-generated JS from `wasm-bindgen` attempts to use
+            // `WebAssembly.instantiateStreaming` to instantiate the wasm module,
+            // but this doesn't work with `file://` urls. This example is frequently
+            // viewed by simply opening `index.html` in a browser (with a `file://`
+            // url), so it would fail if we were to call this function!
+            //
+            // Work around this for now by deleting the function to ensure that the
+            // `no_modules.js` script doesn't have access to it. You won't need this
+            // hack when deploying over HTTP.
+            delete WebAssembly.instantiateStreaming;
+        </script>
+
+        <script src='./wasm_qr_receiver.js'></script>
+        <script src="jsQR.js"></script>
+    
+        <script>
+            var wasm_loaded = false;
+            var receiver = null;
+            wasm_bindgen("./wasm_qr_receiver_bg.wasm").then(() => {
+                wasm_loaded = true;
+                receiver = wasm_bindgen.QrReceiver.new()
+            });
+
+            //Set up video elements
+            var video = document.createElement("video");
+            var canvasElement = document.getElementById("canvas");
+            var progressElement = document.getElementById("progress");
+            var pendingElement = document.getElementById("pending");
+            var canvas = canvasElement.getContext("2d");
+
+            function drawLine(begin, end, color) {
+                canvas.beginPath();
+                canvas.moveTo(begin.x, begin.y);
+                canvas.lineTo(end.x, end.y);
+                canvas.lineWidth = 4;
+                canvas.strokeStyle = color;
+                canvas.stroke();
+            }
+
+            // Use facingMode: environment to attemt to get the front camera on phones
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                video.play();
+                requestAnimationFrame(tick);
+            });
+
+            var finished_download = false;
+            var blob = new Blob();
+            var link = document.createElement('a');
+
+            
+
+            function tick() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvasElement.hidden = false;
+
+                    canvasElement.height = video.videoHeight;
+                    canvasElement.width = video.videoWidth;
+                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                    var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                    var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+                    if (code) {
+                        drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+                        drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+                        drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+                        drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+
+                        //Code has been detected
+                        // console.log(code)
+                        if (wasm_loaded) {
+                            receiver.process(new Uint8Array(code.binaryData))
+                        
+                            progressElement.innerHTML = (receiver.get_progress_percentage() * 100.0).toFixed(2) + "%";
+                            pendingElement.innerHTML = "Pending Blocks: " + receiver.get_num_pending_blocks();
+
+                            if (receiver.has_completed_download()) {
+                                var data = receiver.get_finished_data();
+                                console.log(data);
+                                alert("Finished Decoding!");
+                                alert(String.fromCharCode.apply(String, data))
+
+                                finished_download = true;
+                                blob = new Blob([data]);
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = "blob";
+                                link.innerText = "Download Link"
+                                
+                                document.body.appendChild(link);
+                            }
+                        }
+                    }
+                }
+                requestAnimationFrame(tick);
+            }
+        
+        </script>
+    </body>
+</html>
